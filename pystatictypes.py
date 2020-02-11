@@ -12,7 +12,6 @@ def _missing_annotation(pos, func_name):
 
 """
 List of known issues:
-	- NoneType annotations not parsed properly
 	- Some weird behaviour with running the function too early when
 	positional kwargs are used
 """
@@ -35,8 +34,6 @@ def typed(func):
 		elif not rv._has_var_kw_args and len(kwargs) > len(rv._kw_types) + len(rv._pos_types) - len(args):
 			return func(*args, **kwargs)
 		for i in range(len(rv._pos_types)):
-			#placeholder until parsing annotations done properly
-			#similarly for all type checking
 			if type(args[i]) != rv.pos_types[i]:
 				raise _bad_pos_type(i, func.__name__)
 		kw_iterable = iter(rv._kw_types)
@@ -56,9 +53,11 @@ def typed(func):
 			if key in rv._kw_types:
 				if(type(kwargs[key]) != rv.kw_types[key]):
 					raise _bad_key_type(key, func.__name__)
+			visited_keys.add(key)
 		func_rv = func(*args, **kwargs)
 		if type(func_rv) != rv._rv_type:
-			raise TypeError(func.__name__, 'evaluated to unexpected return type', type(func_rv))
+			if not (func_rv == None == rv._rv_type):
+				raise TypeError(func.__name__, 'evaluated to unexpected return type', type(func_rv))
 		return func_rv
 
 	#2 containers for parameters
@@ -83,8 +82,6 @@ def typed(func):
 		key = next(param_iter)
 		param = parameters[key]
 		if param.kind == Parameter.POSITIONAL_ONLY:
-			#placeholder until parsing annotations done properly
-			#similarly for storing any annotation
 			#TODO error out if annotation is not a type
 			if param.annotation == _empty:
 				raise _missing_annotation(i, func.__name__)
