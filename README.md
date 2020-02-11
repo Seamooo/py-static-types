@@ -1,9 +1,12 @@
 py-static-types
 ==========
-A library for adding typechecking to annotated functions in python
+A library for adding typechecking to annotated functions in python  
+
+
 Installation
------
+-----------
 `python3 -m pip install pystatictypes`
+
 Usage
 ------
 To use the library there is a single, exposed decorator `typed` meant for use
